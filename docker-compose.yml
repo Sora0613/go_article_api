@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  go:
+    container_name: go-api-server
+    platform: linux/x86_64
+    hostname: localhost
+    ports:
+      - '8080:8080'
+      - '2345:2345'
+    tty: true
+    build:
+      context: .
+      dockerfile: ./docker/go/Dockerfile
+    volumes:
+      - ./back:/go/src/app
+
+  db:
+    container_name: go-db
+    build:
+      dockerfile: ./docker/db/Dockerfile
+    restart: always
+    # 公開しないためこちらにpasswordを記載
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: go_task_db
+      MYSQL_USER: go_user
+      MYSQL_PASSWORD: go_password
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./docker/db/data:/go/lib/mysql
+
