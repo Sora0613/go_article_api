@@ -1,6 +1,7 @@
 package main
 
 import (
+	"example/go/Models"
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -19,17 +20,10 @@ func gormConnect() *gorm.DB {
 	}
 
 	db.Set("gorm:table_options", "ENGINE=InnoDB")
+	db.AutoMigrate(&Models.Company{})
 
 	fmt.Println("--------------------------------- ")
 	fmt.Println("Database connected: ", &db)
 	fmt.Println("--------------------------------- ")
 	return db
-}
-
-func CloseDB(db *gorm.DB) {
-	cdb, err := db.DB()
-	if err != nil {
-		panic(err.Error())
-	}
-	defer cdb.Close()
 }

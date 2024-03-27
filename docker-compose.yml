@@ -30,3 +30,16 @@ services:
     volumes:
       - ./docker/db/data:/go/lib/mysql
 
+  phpmyadmin:
+    container_name: go-phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - '8081:80'
+    environment:
+      PMA_HOSTS: db
+      PMA_USER: root
+      PMA_PASSWORD: password
+
