@@ -9,11 +9,12 @@ func main() {
 
 	s := gin.Default()
 
-	s.GET("/company", getAllCompanies)
-
-	s.GET("/company/:id", getCompany)
-
-	s.POST("/company", postCompany)
+	companyRoutes := s.Group("/company")
+	{
+		companyRoutes.GET("", getAllCompanies)
+		companyRoutes.GET("/:id", getCompany)
+		companyRoutes.POST("", postCompany)
+	}
 
 	s.Run(":8080")
 }
