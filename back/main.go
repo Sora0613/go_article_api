@@ -9,11 +9,11 @@ func main() {
 
 	s := gin.Default()
 
-	s.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	s.GET("/company", getAllCompanies)
+
+	s.GET("/company/:id", getCompany)
+
+	s.POST("/company", postCompany)
 
 	s.Run(":8080")
 }
