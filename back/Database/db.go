@@ -24,6 +24,7 @@ func GormConnect() *gorm.DB {
 		&Models.Article{},
 		&Models.Company{},
 		&Models.OBVisits{},
+		&Models.Offer{},
 	)
 
 	fmt.Println("--------------------------------- ")

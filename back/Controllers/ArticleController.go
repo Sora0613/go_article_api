@@ -8,6 +8,7 @@ import (
 )
 
 // Articleには各項目のIDを入れるつもりなので必要な情報はArticleからアクセスできるようにしたい。
+// それか、テーブル一つ一つにarticleのIDいれる？？？←これはなしかも、親子関係を考えると無理
 
 type ArticleController struct{}
 
