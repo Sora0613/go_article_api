@@ -16,5 +16,12 @@ func main() {
 		companyRoutes.POST("", postCompany)
 	}
 
+	obVisitRoutes := s.Group("/obvisit")
+	{
+		obVisitRoutes.GET("/:id", getOBVisits)
+		obVisitRoutes.GET("", getAllOBVisits)
+		obVisitRoutes.POST("", postOBVisits)
+	}
+
 	s.Run(":8080")
 }
