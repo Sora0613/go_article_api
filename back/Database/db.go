@@ -20,7 +20,11 @@ func GormConnect() *gorm.DB {
 	}
 
 	db.Set("gorm:table_options", "ENGINE=InnoDB")
-	db.AutoMigrate(&Models.Company{}, &Models.OBVisits{})
+	db.AutoMigrate(
+		&Models.Article{},
+		&Models.Company{},
+		&Models.OBVisits{},
+	)
 
 	fmt.Println("--------------------------------- ")
 	fmt.Println("Database connected: ", &db)
