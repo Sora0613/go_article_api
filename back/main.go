@@ -2,26 +2,16 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"go_api/Database"
+	"go_api/Routes"
 )
 
 func main() {
-	gormConnect()
+	Database.GormConnect()
 
 	s := gin.Default()
 
-	companyRoutes := s.Group("/company")
-	{
-		companyRoutes.GET("", getAllCompanies)
-		companyRoutes.GET("/:id", getCompany)
-		companyRoutes.POST("", postCompany)
-	}
-
-	obVisitRoutes := s.Group("/obvisit")
-	{
-		obVisitRoutes.GET("/:id", getOBVisits)
-		obVisitRoutes.GET("", getAllOBVisits)
-		obVisitRoutes.POST("", postOBVisits)
-	}
+	Routes.SetupRoutes(s)
 
 	s.Run(":8080")
 }
