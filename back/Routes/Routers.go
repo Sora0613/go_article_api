@@ -7,17 +7,27 @@ import (
 
 func SetupRoutes(s *gin.Engine) {
 
+	// インスタンス定義
+	articleController := Controllers.ArticleController{}
+	companyController := Controllers.CompanyController{}
+	obvisitController := Controllers.OBVisitController{}
+
+	articleRoutes := s.Group("/article")
+	{
+		articleRoutes.GET("", articleController.GetAllArticle)
+	}
+
 	companyRoutes := s.Group("/company")
 	{
-		companyRoutes.GET("", Controllers.GetAllCompanies)
-		companyRoutes.GET("/:id", Controllers.GetCompany)
-		companyRoutes.POST("", Controllers.PostCompany)
+		companyRoutes.GET("", companyController.GetAllCompanies)
+		companyRoutes.GET("/:id", companyController.GetCompany)
+		companyRoutes.POST("", companyController.PostCompany)
 	}
 
 	obVisitRoutes := s.Group("/obvisit")
 	{
-		obVisitRoutes.GET("/:id", Controllers.GetOBVisits)
-		obVisitRoutes.GET("", Controllers.GetAllOBVisits)
-		obVisitRoutes.POST("", Controllers.PostOBVisits)
+		obVisitRoutes.GET("", obvisitController.GetAllOBVisits)
+		obVisitRoutes.GET("/:id", obvisitController.GetOBVisits)
+		obVisitRoutes.POST("", obvisitController.PostOBVisits)
 	}
 }
