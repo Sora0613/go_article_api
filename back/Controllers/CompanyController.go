@@ -10,7 +10,9 @@ import (
 	"time"
 )
 
-func GetAllCompanies(c *gin.Context) {
+type CompanyController struct{}
+
+func (cc CompanyController) GetAllCompanies(c *gin.Context) {
 	db := Database.GormConnect()
 	var company []Models.Company
 	db.Find(&company)
@@ -18,7 +20,7 @@ func GetAllCompanies(c *gin.Context) {
 	c.JSON(http.StatusOK, company)
 }
 
-func GetCompany(c *gin.Context) {
+func (cc CompanyController) GetCompany(c *gin.Context) {
 	db := Database.GormConnect()
 	id := c.Param("id")
 	var company Models.Company
@@ -36,7 +38,7 @@ func GetCompany(c *gin.Context) {
 	c.JSON(http.StatusOK, company)
 }
 
-func PostCompany(c *gin.Context) {
+func (cc CompanyController) PostCompany(c *gin.Context) {
 	db := Database.GormConnect()
 	company := Models.Company{}
 	now := time.Now()

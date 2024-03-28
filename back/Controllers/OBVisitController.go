@@ -10,7 +10,9 @@ import (
 	"time"
 )
 
-func GetAllOBVisits(c *gin.Context) {
+type OBVisitController struct{}
+
+func (oc OBVisitController) GetAllOBVisits(c *gin.Context) {
 	db := Database.GormConnect()
 	var obVisits []Models.OBVisits
 	db.Find(&obVisits)
@@ -18,11 +20,12 @@ func GetAllOBVisits(c *gin.Context) {
 	c.JSON(http.StatusOK, obVisits)
 }
 
-func GetOBVisits(c *gin.Context) {
+func (oc OBVisitController) GetOBVisits(c *gin.Context) {
 	db := Database.GormConnect()
 	id := c.Param("id")
 	var obVisits []Models.OBVisits
 
+	// OB訪問IDがない場合。
 	if err := db.First(&obVisits, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "This id not found"})
@@ -35,7 +38,7 @@ func GetOBVisits(c *gin.Context) {
 	c.JSON(http.StatusOK, obVisits)
 }
 
-func PostOBVisits(c *gin.Context) {
+func (oc OBVisitController) PostOBVisits(c *gin.Context) {
 	db := Database.GormConnect()
 	obVisits := Models.OBVisits{}
 	now := time.Now()
