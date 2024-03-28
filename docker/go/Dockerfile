@@ -1,6 +1,6 @@
 FROM golang:1.22.1-alpine3.18
 
-WORKDIR /go/src/app/
+WORKDIR /app/
 
 COPY ./back .
 
@@ -11,7 +11,6 @@ RUN apk upgrade --update && \
 
 RUN go install github.com/go-delve/delve/cmd/dlv@latest && \
     go install github.com/cosmtrek/air@latest
-    
 
 CMD ["air","-c",".air.toml"]
 

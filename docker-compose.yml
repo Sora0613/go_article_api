@@ -12,7 +12,7 @@ services:
       context: .
       dockerfile: ./docker/go/Dockerfile
     volumes:
-      - ./back:/go/src/app
+      - ./back:/app
 
   db:
     container_name: go-db
