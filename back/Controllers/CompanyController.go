@@ -43,7 +43,7 @@ func (cc CompanyController) PostCompany(c *gin.Context) {
 	company := Models.Company{}
 	now := time.Now()
 	company.CreatedAt = now
-	company.CreatedAt = now
+	company.UpdatedAt = now
 
 	err := c.BindJSON(&company)
 

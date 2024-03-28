@@ -43,7 +43,7 @@ func (oc OBVisitController) PostOBVisits(c *gin.Context) {
 	obVisits := Models.OBVisits{}
 	now := time.Now()
 	obVisits.CreatedAt = now
-	obVisits.CreatedAt = now
+	obVisits.UpdatedAt = now
 
 	err := c.BindJSON(&obVisits)
 
