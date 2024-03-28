@@ -8,6 +8,7 @@ import (
 func main() {
 	// Database.GormConnect()
 	s := gin.Default()
+
 	Routes.SetupRoutes(s)
 
 	s.Run(":8080")
