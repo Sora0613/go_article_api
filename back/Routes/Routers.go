@@ -12,6 +12,7 @@ func SetupRoutes(s *gin.Engine) {
 	companyController := Controllers.CompanyController{}
 	obvisitController := Controllers.OBVisitController{}
 	offerController := Controllers.OfferController{}
+	interviewFeedbackController := Controllers.InterviewFeedbackController{}
 
 	articleRoutes := s.Group("/article")
 	{
@@ -37,6 +38,13 @@ func SetupRoutes(s *gin.Engine) {
 		offerRoutes.GET("", offerController.GetAllOffer)
 		offerRoutes.GET("/:id", offerController.GetOffer)
 		offerRoutes.POST("", offerController.PostOffer)
+	}
+
+	interviewFeedbackRoutes := s.Group("/interview-feedback")
+	{
+		interviewFeedbackRoutes.GET("", interviewFeedbackController.GetAllInterviewFeedbacks)
+		interviewFeedbackRoutes.GET("/:id", interviewFeedbackController.GetInterviewFeedback)
+		interviewFeedbackRoutes.POST("", interviewFeedbackController.PostInterviewFeedback)
 	}
 
 }
