@@ -4,5 +4,6 @@ import "gorm.io/gorm"
 
 type OBVisits struct {
 	gorm.Model
-	Visited string `json:"visited"`
+	ArticleID uint   `gorm:"foreignKey:ArticleID" json:"article_id"`
+	Visited   string `json:"visited"`
 }

@@ -7,6 +7,7 @@ import "gorm.io/gorm"
 type InterviewFeedback struct {
 	gorm.Model
 
+	ArticleID         uint   `gorm:"foreignKey:ArticleID" json:"article_id"`
 	MainFocus         string `json:"main_focus"`         // 本選考ではどのようなことが重視されたと思いますか？
 	MemorableQuestion string `json:"memorable_question"` // 面接で印象に残った質問をいくつか挙げてください。
 	Preparation       string `json:"preparation"`        // 面接時に心がけていたことはありますか？
