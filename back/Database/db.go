@@ -22,6 +22,7 @@ func GormConnect() *gorm.DB {
 	db.Set("gorm:table_options", "ENGINE=InnoDB")
 	db.AutoMigrate(
 		&Models.Article{},
+		&Models.Title{},
 		&Models.Company{},
 		&Models.OBVisits{},
 		&Models.Offer{},

@@ -40,19 +40,51 @@ func (oc OfferController) GetOffer(c *gin.Context) {
 
 func (oc OfferController) PostOffer(c *gin.Context) {
 	db := Database.GormConnect()
-	offer := Models.Offer{}
+
+	requestData := Models.Offer{}
+
+	if err := c.BindJSON(&requestData); err != nil {
+		c.String(http.StatusBadRequest, "Failed to parse JSON: "+err.Error())
+		return
+	}
+
+	// Articleを検索して存在しない場合は新規作成
+	var article Models.Article
+	if err := db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
+		// Articleが見つからない場合は新しいArticleを作成
+		now := time.Now()
+		article = Models.Article{
+			Offer: Models.Offer{},
+		}
+		article.CreatedAt = now
+		article.UpdatedAt = now
+		if err := db.Create(&article).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, "Failed to create article: "+err.Error())
+			return
+		}
+	}
+
+	var existingOffer Models.Offer
+	if err := db.Where("article_id = ?", requestData.ArticleID).First(&existingOffer).Error; err == nil {
+		c.JSON(http.StatusConflict, "Offer already exists for this article.")
+		return
+	}
+
 	now := time.Now()
+	offer := Models.Offer{
+		ArticleID:      article.ID,
+		Offered:        requestData.Offered,
+		OfferedAt:      requestData.OfferedAt,
+		TaskAfterOffer: requestData.TaskAfterOffer,
+		Constraints:    requestData.Constraints,
+	}
 	offer.CreatedAt = now
 	offer.UpdatedAt = now
 
-	err := c.BindJSON(&offer)
-
-	if err != nil {
-		c.String(http.StatusBadRequest, "Request is failed: "+err.Error())
-	}
-
 	db.Create(&offer)
-	db.Save(&offer)
+
+	article.Offer = offer
+	db.Save(&article)
 
 	c.JSON(http.StatusOK, offer)
 }

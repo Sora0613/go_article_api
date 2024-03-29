@@ -10,23 +10,23 @@ import (
 	"time"
 )
 
-type CompanyController struct{}
+type TitleController struct{}
 
-func (cc CompanyController) GetAllCompanies(c *gin.Context) {
+func (oc TitleController) GetAllTitle(c *gin.Context) {
 	db := Database.GormConnect()
-	var company []Models.Company
-	db.Find(&company)
+	var title []Models.Title
+	db.Find(&title)
 
-	c.JSON(http.StatusOK, company)
+	c.JSON(http.StatusOK, title)
 }
 
-func (cc CompanyController) GetCompany(c *gin.Context) {
+func (oc TitleController) GetTitle(c *gin.Context) {
 	db := Database.GormConnect()
-	id := c.Param("id")
-	var company Models.Company
+	id := c.Params.ByName("id")
+	var title Models.Title
+	db.First(&title, id)
 
-	// 会社IDがない場合。
-	if err := db.First(&company, id).Error; err != nil {
+	if err := db.First(&title, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "This id not found"})
 			return
@@ -35,13 +35,13 @@ func (cc CompanyController) GetCompany(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, company)
+	c.JSON(http.StatusOK, title)
 }
 
-func (cc CompanyController) PostCompany(c *gin.Context) {
+func (oc TitleController) PostTitle(c *gin.Context) {
 	db := Database.GormConnect()
 
-	requestData := Models.Company{}
+	requestData := Models.Title{}
 
 	if err := c.BindJSON(&requestData); err != nil {
 		c.String(http.StatusBadRequest, "Failed to parse JSON: "+err.Error())
@@ -54,7 +54,7 @@ func (cc CompanyController) PostCompany(c *gin.Context) {
 		// Articleが見つからない場合は新しいArticleを作成
 		now := time.Now()
 		article = Models.Article{
-			Company: Models.Company{},
+			Title: Models.Title{},
 		}
 		article.CreatedAt = now
 		article.UpdatedAt = now
@@ -64,28 +64,24 @@ func (cc CompanyController) PostCompany(c *gin.Context) {
 		}
 	}
 
-	// Articleに関連付けられたCompanyが存在するかを確認
-	var existingCompany Models.Company
-	if err := db.Where("article_id = ?", requestData.ArticleID).First(&existingCompany).Error; err == nil {
-		c.JSON(http.StatusConflict, "Company already exists for this article.")
+	var existingTitle Models.Title
+	if err := db.Where("article_id = ?", requestData.ArticleID).First(&existingTitle).Error; err == nil {
+		c.JSON(http.StatusConflict, "Title already exists for this article.")
 		return
 	}
 
-	// 会社情報を登録
 	now := time.Now()
-	company := Models.Company{
-		ArticleID:         article.ID,
-		Name:              requestData.Name,
-		Department:        requestData.Department,
-		RecruitmentPeriod: requestData.RecruitmentPeriod,
+	title := Models.Title{
+		ArticleID: article.ID,
+		Title:     requestData.Title,
 	}
-	company.CreatedAt = now
-	company.UpdatedAt = now
+	title.CreatedAt = now
+	title.UpdatedAt = now
 
-	db.Create(&company)
+	db.Create(&title)
 
-	article.Company = company
+	article.Title = title
 	db.Save(&article)
 
-	c.JSON(http.StatusOK, company)
+	c.JSON(http.StatusOK, title)
 }
