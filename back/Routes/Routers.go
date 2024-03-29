@@ -9,14 +9,24 @@ func SetupRoutes(s *gin.Engine) {
 
 	// インスタンス定義
 	articleController := Controllers.ArticleController{}
+	TitleController := Controllers.TitleController{}
 	companyController := Controllers.CompanyController{}
 	obvisitController := Controllers.OBVisitController{}
 	offerController := Controllers.OfferController{}
 	interviewFeedbackController := Controllers.InterviewFeedbackController{}
 
+	// TODO:IDは全てそれぞれのテーブルのID, ArticleIDでも撮ってこれるようにしようかな。
 	articleRoutes := s.Group("/article")
 	{
-		articleRoutes.GET("", articleController.GetAllArticle)
+		// articleRoutes.GET("", articleController.GetAllArticle)
+		articleRoutes.GET("/:id", articleController.GetAllArticle)
+	}
+
+	titleRoutes := s.Group("/title")
+	{
+		titleRoutes.GET("", TitleController.GetAllTitle)
+		titleRoutes.GET("/:id", TitleController.GetTitle)
+		titleRoutes.POST("", TitleController.PostTitle)
 	}
 
 	companyRoutes := s.Group("/company")
