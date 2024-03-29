@@ -25,7 +25,7 @@ func (ic InterviewFeedbackController) GetInterviewFeedback(c *gin.Context) {
 	id := c.Param("id")
 	var interviewFeedback Models.InterviewFeedback
 
-	// 面接フィードバックIDがない場合。
+	// IDがない場合。
 	if err := db.First(&interviewFeedback, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "This id not found"})
@@ -42,19 +42,54 @@ func (ic InterviewFeedbackController) GetInterviewFeedback(c *gin.Context) {
 
 func (ic InterviewFeedbackController) PostInterviewFeedback(c *gin.Context) {
 	db := Database.GormConnect()
-	interviewFeedback := Models.InterviewFeedback{}
+
+	requestData := Models.InterviewFeedback{}
+
+	if err := c.BindJSON(&requestData); err != nil {
+		c.String(http.StatusBadRequest, "Failed to parse JSON: "+err.Error())
+		return
+	}
+
+	// Articleを検索して存在しない場合は新規作成
+	var article Models.Article
+	if err := db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
+		// Articleが見つからない場合は新しいArticleを作成
+		now := time.Now()
+		article = Models.Article{
+			InterviewFeedback: Models.InterviewFeedback{},
+		}
+		article.CreatedAt = now
+		article.UpdatedAt = now
+		if err := db.Create(&article).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, "Failed to create article: "+err.Error())
+			return
+		}
+	}
+
+	var existingInterviewFeedback Models.InterviewFeedback
+	if err := db.Where("article_id = ?", requestData.ArticleID).First(&existingInterviewFeedback).Error; err == nil {
+		c.JSON(http.StatusConflict, "InterviewFeedback already exists for this article.")
+		return
+	}
+
 	now := time.Now()
+	interviewFeedback := Models.InterviewFeedback{
+		ArticleID:         article.ID,
+		MainFocus:         requestData.MainFocus,
+		MemorableQuestion: requestData.MemorableQuestion,
+		Preparation:       requestData.Preparation,
+		KeyPoints:         requestData.KeyPoints,
+		ResearchSource:    requestData.ResearchSource,
+		Impressions:       requestData.Impressions,
+		AdviceForFuture:   requestData.AdviceForFuture,
+	}
 	interviewFeedback.CreatedAt = now
 	interviewFeedback.UpdatedAt = now
 
-	err := c.BindJSON(&interviewFeedback)
-
-	if err != nil {
-		c.String(http.StatusBadRequest, "Request is failed: "+err.Error())
-	}
-
 	db.Create(&interviewFeedback)
-	db.Save(&interviewFeedback)
+
+	article.InterviewFeedback = interviewFeedback
+	db.Save(&article)
 
 	c.JSON(http.StatusOK, interviewFeedback)
 }

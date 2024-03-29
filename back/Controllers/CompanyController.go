@@ -40,19 +40,52 @@ func (cc CompanyController) GetCompany(c *gin.Context) {
 
 func (cc CompanyController) PostCompany(c *gin.Context) {
 	db := Database.GormConnect()
-	company := Models.Company{}
+
+	requestData := Models.Company{}
+
+	if err := c.BindJSON(&requestData); err != nil {
+		c.String(http.StatusBadRequest, "Failed to parse JSON: "+err.Error())
+		return
+	}
+
+	// Articleを検索して存在しない場合は新規作成
+	var article Models.Article
+	if err := db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
+		// Articleが見つからない場合は新しいArticleを作成
+		now := time.Now()
+		article = Models.Article{
+			Company: Models.Company{},
+		}
+		article.CreatedAt = now
+		article.UpdatedAt = now
+		if err := db.Create(&article).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, "Failed to create article: "+err.Error())
+			return
+		}
+	}
+
+	// Articleに関連付けられたCompanyが存在するかを確認
+	var existingCompany Models.Company
+	if err := db.Where("article_id = ?", requestData.ArticleID).First(&existingCompany).Error; err == nil {
+		c.JSON(http.StatusConflict, "Company already exists for this article.")
+		return
+	}
+
+	// 会社情報を登録
 	now := time.Now()
+	company := Models.Company{
+		ArticleID:         article.ID,
+		Name:              requestData.Name,
+		Department:        requestData.Department,
+		RecruitmentPeriod: requestData.RecruitmentPeriod,
+	}
 	company.CreatedAt = now
 	company.UpdatedAt = now
 
-	err := c.BindJSON(&company)
-
-	if err != nil {
-		c.String(http.StatusBadRequest, "Request is failed: "+err.Error())
-	}
-
 	db.Create(&company)
-	db.Save(&company)
+
+	article.Company = company
+	db.Save(&article)
 
 	c.JSON(http.StatusOK, company)
 }
