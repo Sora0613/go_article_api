@@ -7,9 +7,8 @@ type Article struct {
 
 	Title             Title             `json:"title"`
 	Company           Company           `json:"company"`
+	SelectionProcess  SelectionProcess  `json:"selection_process"`
 	OBVisits          OBVisits          `json:"ob_visits"`
 	Offer             Offer             `json:"offer"`
 	InterviewFeedback InterviewFeedback `json:"interview_feedback"`
 }
-
-// SelectionProcess  SelectionProcess  `json:"selection_process"`
