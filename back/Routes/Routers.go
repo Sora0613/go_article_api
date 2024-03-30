@@ -11,6 +11,7 @@ func SetupRoutes(s *gin.Engine) {
 	articleController := Controllers.ArticleController{}
 	TitleController := Controllers.TitleController{}
 	companyController := Controllers.CompanyController{}
+	selectionProcessController := Controllers.SelectionProcessController{}
 	obvisitController := Controllers.OBVisitController{}
 	offerController := Controllers.OfferController{}
 	interviewFeedbackController := Controllers.InterviewFeedbackController{}
@@ -19,7 +20,7 @@ func SetupRoutes(s *gin.Engine) {
 	articleRoutes := s.Group("/article")
 	{
 		// articleRoutes.GET("", articleController.GetAllArticle)
-		articleRoutes.GET("/:id", articleController.GetAllArticle)
+		articleRoutes.GET("/:id", articleController.GetArticle)
 	}
 
 	titleRoutes := s.Group("/title")
@@ -34,6 +35,12 @@ func SetupRoutes(s *gin.Engine) {
 		companyRoutes.GET("", companyController.GetAllCompanies)
 		companyRoutes.GET("/:id", companyController.GetCompany)
 		companyRoutes.POST("", companyController.PostCompany)
+	}
+
+	selectionProcessRoutes := s.Group("/selection-process")
+	{
+		selectionProcessRoutes.GET("/:id", selectionProcessController.GetSelectionProcess)
+		selectionProcessRoutes.POST("", selectionProcessController.PostSelectionProcess)
 	}
 
 	obVisitRoutes := s.Group("/obvisit")
