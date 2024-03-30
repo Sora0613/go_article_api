@@ -7,7 +7,6 @@ import (
 	"go_api/Models"
 	"gorm.io/gorm"
 	"net/http"
-	"time"
 )
 
 type OfferController struct{}
@@ -26,9 +25,10 @@ func (oc OfferController) GetOffer(c *gin.Context) {
 	var offer Models.Offer
 	db.First(&offer, id)
 
-	if err := db.First(&offer, id).Error; err != nil {
+	// ArticleIDから取得
+	if err := db.Where("article_id = ?", id).First(&offer).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "This id not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Offer info not found"})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -52,25 +52,23 @@ func (oc OfferController) PostOffer(c *gin.Context) {
 	var article Models.Article
 	if err := db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
 		// Articleが見つからない場合は新しいArticleを作成
-		now := time.Now()
 		article = Models.Article{
 			Offer: Models.Offer{},
 		}
-		article.CreatedAt = now
-		article.UpdatedAt = now
 		if err := db.Create(&article).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, "Failed to create article: "+err.Error())
 			return
 		}
 	}
 
+	// Articleに関連付けられたOfferが存在するかを確認
 	var existingOffer Models.Offer
 	if err := db.Where("article_id = ?", requestData.ArticleID).First(&existingOffer).Error; err == nil {
 		c.JSON(http.StatusConflict, "Offer already exists for this article.")
 		return
 	}
 
-	now := time.Now()
+	// 内定情報の登録
 	offer := Models.Offer{
 		ArticleID:      article.ID,
 		Offered:        requestData.Offered,
@@ -78,13 +76,18 @@ func (oc OfferController) PostOffer(c *gin.Context) {
 		TaskAfterOffer: requestData.TaskAfterOffer,
 		Constraints:    requestData.Constraints,
 	}
-	offer.CreatedAt = now
-	offer.UpdatedAt = now
 
-	db.Create(&offer)
+	if err := db.Create(&offer).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, "Failed to create Offer: "+err.Error())
+		return
+	}
 
+	// ArticleにOfferを関連付けて保存
 	article.Offer = offer
-	db.Save(&article)
+	if err := db.Save(&article).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, "Failed to save Offer to article: "+err.Error())
+		return
+	}
 
 	c.JSON(http.StatusOK, offer)
 }

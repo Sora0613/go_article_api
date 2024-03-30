@@ -7,7 +7,6 @@ import (
 	"go_api/Models"
 	"gorm.io/gorm"
 	"net/http"
-	"time"
 )
 
 type TitleController struct{}
@@ -20,15 +19,15 @@ func (oc TitleController) GetAllTitle(c *gin.Context) {
 	c.JSON(http.StatusOK, title)
 }
 
-func (oc TitleController) GetTitle(c *gin.Context) {
+func (tc TitleController) GetTitle(c *gin.Context) {
 	db := Database.GormConnect()
-	id := c.Params.ByName("id")
+	id := c.Param("id")
 	var title Models.Title
-	db.First(&title, id)
 
-	if err := db.First(&title, id).Error; err != nil {
+	// ArticleIDからタイトルを取得
+	if err := db.Where("article_id = ?", id).First(&title).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "This id not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "Title info not found for this article"})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -44,7 +43,7 @@ func (oc TitleController) PostTitle(c *gin.Context) {
 	requestData := Models.Title{}
 
 	if err := c.BindJSON(&requestData); err != nil {
-		c.String(http.StatusBadRequest, "Failed to parse JSON: "+err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse JSON: " + err.Error()})
 		return
 	}
 
@@ -52,36 +51,39 @@ func (oc TitleController) PostTitle(c *gin.Context) {
 	var article Models.Article
 	if err := db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
 		// Articleが見つからない場合は新しいArticleを作成
-		now := time.Now()
 		article = Models.Article{
 			Title: Models.Title{},
 		}
-		article.CreatedAt = now
-		article.UpdatedAt = now
 		if err := db.Create(&article).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, "Failed to create article: "+err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create article: " + err.Error()})
 			return
 		}
 	}
 
+	// Articleに関連付けられたタイトルが既に存在するかを確認
 	var existingTitle Models.Title
 	if err := db.Where("article_id = ?", requestData.ArticleID).First(&existingTitle).Error; err == nil {
-		c.JSON(http.StatusConflict, "Title already exists for this article.")
+		c.JSON(http.StatusConflict, gin.H{"error": "Title already exists for this article."})
 		return
 	}
 
-	now := time.Now()
 	title := Models.Title{
 		ArticleID: article.ID,
 		Title:     requestData.Title,
 	}
-	title.CreatedAt = now
-	title.UpdatedAt = now
 
-	db.Create(&title)
+	// タイトルをデータベースに作成
+	if err := db.Create(&title).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create title: " + err.Error()})
+		return
+	}
 
+	// Articleにタイトルを関連付けて保存
 	article.Title = title
-	db.Save(&article)
+	if err := db.Save(&article).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save title to article: " + err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, title)
 }

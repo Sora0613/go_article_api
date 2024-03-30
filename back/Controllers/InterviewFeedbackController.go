@@ -7,7 +7,6 @@ import (
 	"go_api/Models"
 	"gorm.io/gorm"
 	"net/http"
-	"time"
 )
 
 type InterviewFeedbackController struct{}
@@ -25,8 +24,8 @@ func (ic InterviewFeedbackController) GetInterviewFeedback(c *gin.Context) {
 	id := c.Param("id")
 	var interviewFeedback Models.InterviewFeedback
 
-	// IDがない場合。
-	if err := db.First(&interviewFeedback, id).Error; err != nil {
+	// ArticleIDから取得
+	if err := db.Where("article_id = ?", id).First(&interviewFeedback).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "This id not found"})
 			return
@@ -34,8 +33,6 @@ func (ic InterviewFeedbackController) GetInterviewFeedback(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		return
 	}
-
-	db.First(&interviewFeedback, id)
 
 	c.JSON(http.StatusOK, interviewFeedback)
 }
@@ -54,25 +51,23 @@ func (ic InterviewFeedbackController) PostInterviewFeedback(c *gin.Context) {
 	var article Models.Article
 	if err := db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
 		// Articleが見つからない場合は新しいArticleを作成
-		now := time.Now()
 		article = Models.Article{
 			InterviewFeedback: Models.InterviewFeedback{},
 		}
-		article.CreatedAt = now
-		article.UpdatedAt = now
 		if err := db.Create(&article).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, "Failed to create article: "+err.Error())
 			return
 		}
 	}
 
+	// Articleに関連付けられたInterviewFeedbackが存在するかを確認
 	var existingInterviewFeedback Models.InterviewFeedback
 	if err := db.Where("article_id = ?", requestData.ArticleID).First(&existingInterviewFeedback).Error; err == nil {
 		c.JSON(http.StatusConflict, "InterviewFeedback already exists for this article.")
 		return
 	}
 
-	now := time.Now()
+	// InterviewFeedbackを登録
 	interviewFeedback := Models.InterviewFeedback{
 		ArticleID:         article.ID,
 		MainFocus:         requestData.MainFocus,
@@ -83,13 +78,18 @@ func (ic InterviewFeedbackController) PostInterviewFeedback(c *gin.Context) {
 		Impressions:       requestData.Impressions,
 		AdviceForFuture:   requestData.AdviceForFuture,
 	}
-	interviewFeedback.CreatedAt = now
-	interviewFeedback.UpdatedAt = now
 
-	db.Create(&interviewFeedback)
+	if err := db.Create(&interviewFeedback).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, "Failed to create interview feedback: "+err.Error())
+		return
+	}
 
+	// ArticleにInterviewFeedbackを関連付けて保存
 	article.InterviewFeedback = interviewFeedback
-	db.Save(&article)
+	if err := db.Save(&article).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, "Failed to save interview feedback to article: "+err.Error())
+		return
+	}
 
 	c.JSON(http.StatusOK, interviewFeedback)
 }
