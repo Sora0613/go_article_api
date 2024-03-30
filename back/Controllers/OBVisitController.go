@@ -7,7 +7,6 @@ import (
 	"go_api/Models"
 	"gorm.io/gorm"
 	"net/http"
-	"time"
 )
 
 type OBVisitController struct{}
@@ -22,13 +21,13 @@ func (oc OBVisitController) GetAllOBVisits(c *gin.Context) {
 
 func (oc OBVisitController) GetOBVisits(c *gin.Context) {
 	db := Database.GormConnect()
-	id := c.Param("id")
+	articleID := c.Param("id")
 	var obVisits []Models.OBVisits
 
-	// OB訪問IDがない場合。
-	if err := db.First(&obVisits, id).Error; err != nil {
+	// ArticleIDからOB訪問を検索
+	if err := db.Where("article_id = ?", articleID).Find(&obVisits).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusNotFound, gin.H{"error": "This id not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "OBVisits not found for this article"})
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -52,37 +51,39 @@ func (oc OBVisitController) PostOBVisits(c *gin.Context) {
 	var article Models.Article
 	if err := db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
 		// Articleが見つからない場合は新しいArticleを作成
-		now := time.Now()
 		article = Models.Article{
 			OBVisits: Models.OBVisits{},
 		}
-		article.CreatedAt = now
-		article.UpdatedAt = now
 		if err := db.Create(&article).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, "Failed to create article: "+err.Error())
 			return
 		}
 	}
 
+	// Articleに関連付けられたOBVisitsが存在するかを確認
 	var existingOBVisits Models.OBVisits
 	if err := db.Where("article_id = ?", requestData.ArticleID).First(&existingOBVisits).Error; err == nil {
 		c.JSON(http.StatusConflict, "OBVisits already exists for this article.")
 		return
 	}
 
-	// 会社情報を登録
-	now := time.Now()
+	// OBVisitsを登録
 	obvisits := Models.OBVisits{
 		ArticleID: article.ID,
 		Visited:   requestData.Visited,
 	}
-	obvisits.CreatedAt = now
-	obvisits.UpdatedAt = now
 
-	db.Create(&obvisits)
+	if err := db.Create(&obvisits).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, "Failed to create OBVisits: "+err.Error())
+		return
+	}
 
+	// ArticleにOBVisitsを関連付けて保存
 	article.OBVisits = obvisits
-	db.Save(&article)
+	if err := db.Save(&article).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, "Failed to save OBVisits to article: "+err.Error())
+		return
+	}
 
 	c.JSON(http.StatusOK, obvisits)
 }

@@ -16,10 +16,11 @@ func SetupRoutes(s *gin.Engine) {
 	offerController := Controllers.OfferController{}
 	interviewFeedbackController := Controllers.InterviewFeedbackController{}
 
-	// TODO:IDは全てそれぞれのテーブルのID, ArticleIDでも撮ってこれるようにしようかな。
+	// ID指定の場合は全てArticleのIDを指定
+
 	articleRoutes := s.Group("/article")
 	{
-		// articleRoutes.GET("", articleController.GetAllArticle)
+		articleRoutes.GET("", articleController.GetAllArticle)
 		articleRoutes.GET("/:id", articleController.GetArticle)
 	}
 
@@ -39,6 +40,7 @@ func SetupRoutes(s *gin.Engine) {
 
 	selectionProcessRoutes := s.Group("/selection-process")
 	{
+		selectionProcessRoutes.GET("", selectionProcessController.GetAllSelectionProcesses)
 		selectionProcessRoutes.GET("/:id", selectionProcessController.GetSelectionProcess)
 		selectionProcessRoutes.POST("", selectionProcessController.PostSelectionProcess)
 	}
