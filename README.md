@@ -1,12 +1,10 @@
 # Article Manager API
 
 ## Description
-This API is used to manage articles. 
-
-It allows to create and read articles.
+記事に関するPOST/GETのAPIです。
 
 ## Source Codes
-The source codes are available at ./back
+ソースコードは ./back にあります。
 
 ## TODO
 - 選考プロセスのstepsの上手な追加、管理方法
