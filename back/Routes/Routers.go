@@ -22,6 +22,7 @@ func SetupRoutes(s *gin.Engine) {
 	{
 		articleRoutes.GET("", articleController.GetAllArticle)
 		articleRoutes.GET("/:id", articleController.GetArticle)
+		articleRoutes.POST("", articleController.PostArticle)
 	}
 
 	titleRoutes := s.Group("/title")
