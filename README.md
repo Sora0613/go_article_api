@@ -6,10 +6,12 @@
 ## Source Codes
 ソースコードは ./back にあります。
 
-## TODO
+## Todo && Memo
 - 選考プロセスのstepsの上手な追加、管理方法
 - 選考プロセスの順番の管理
 - POST Articleの実装（あったら楽かも）
+- テストの実装
+- APIドキュメント(gin-swaggerを使ってみる)
 
 ## The Content of tasks
 テーマ: 選考体験記の投稿・取得ができるAPIを実装する
