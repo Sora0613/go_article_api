@@ -8,13 +8,13 @@ type SelectionProcess struct {
 	gorm.Model
 
 	ArticleID       uint            `json:"article_id"`
-	Steps           Steps           `json:"steps"`
-	EntrySheet      EntrySheet      `json:"entry_sheet"`
-	JobFair         JobFair         `json:"job_fair"`
-	WrittenTest     WrittenTest     `json:"written_test"`
-	GroupDiscussion GroupDiscussion `json:"group_discussion"`
-	OtherSelection  OtherSelection  `json:"other_selection"`
-	Interviews      []Interview     `json:"interviews"` // 面接情報（1次面接・2次面接...）
+	Steps           Steps           `json:"steps"`            // 選考ステップ
+	EntrySheet      EntrySheet      `json:"entry_sheet"`      // エントリーシート
+	JobFair         JobFair         `json:"job_fair"`         // 説明会
+	WrittenTest     WrittenTest     `json:"written_test"`     // 筆記試験・WEBテスト・適性検査
+	GroupDiscussion GroupDiscussion `json:"group_discussion"` // グループディスカッション
+	OtherSelection  OtherSelection  `json:"other_selection"`  // その他の選考（ジョブ・インターンなど）
+	Interviews      []Interview     `json:"interviews"`       // 面接情報（1次面接・2次面接...）
 }
 
 type Steps struct {
