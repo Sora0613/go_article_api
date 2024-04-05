@@ -7,22 +7,38 @@ import (
 	"go_api/Models"
 	"gorm.io/gorm"
 	"net/http"
+	"strconv"
 )
 
 type ArticleController struct{}
 
 func (ac ArticleController) GetAllArticle(c *gin.Context) {
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil {
+		page = 1
+	}
+	pageSize, err := strconv.Atoi(c.Query("pageSize"))
+	if err != nil || pageSize <= 0 {
+		pageSize = 10 // デフォルトのページサイズを10に。
+	}
+
+	// データベースへの接続
 	db := Database.GormConnect()
+
 	var articles []Models.Article
+
+	offset := (page - 1) * pageSize
 	db.Preload("Title").
 		Preload("Company").
 		Preload("SelectionProcess").
 		Preload("OBVisits").
 		Preload("Offer").
 		Preload("InterviewFeedback").
+		Offset(offset).
+		Limit(pageSize).
 		Find(&articles)
 
-	// Articleに関連する各モデルのArticleIDを設定する
+	// forで回してarticleに各IDを設定
 	for i := range articles {
 		articles[i].Title.ArticleID = articles[i].ID
 		articles[i].Company.ArticleID = articles[i].ID
