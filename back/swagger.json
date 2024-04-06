@@ -218,6 +218,593 @@
 					}
 				}
 			}
+		},
+		"/title/{id}": {
+			"get": {
+				"tags": [
+					"Title"
+				],
+				"summary": "Get a title by ID",
+				"description": "Get a title by its ID",
+				"operationId": "getTitleById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the title to retrieve",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Title"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/Title"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Title not found"
+					}
+				}
+			}
+		},
+		"/company": {
+			"post": {
+				"tags": [
+					"Company"
+				],
+				"summary": "Add a new company.",
+				"description": "Add a new company.",
+				"operationId": "addCompany",
+				"requestBody": {
+					"description": "Add a new company.",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Company"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Company"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input"
+					},
+					"422": {
+						"description": "Validation exception"
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"Company"
+				],
+				"summary": "Get all companies",
+				"description": "Get all companies",
+				"operationId": "getCompanies",
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Company"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input"
+					},
+					"422": {
+						"description": "Validation exception"
+					}
+				}
+			}
+		},
+		"/company/{id}": {
+			"get": {
+				"tags": [
+					"Company"
+				],
+				"summary": "Get a company by ID",
+				"description": "Get a company by its ID",
+				"operationId": "getCompanyById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the company to retrieve",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Company"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/Company"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Company not found"
+					}
+				}
+			}
+		},
+		"/selection_process": {
+			"post": {
+				"tags": [
+					"Selection Process"
+				],
+				"summary": "Add a new selection process.",
+				"description": "Add a new selection process.",
+				"operationId": "addSelectionProcess",
+				"requestBody": {
+					"description": "Add a new selection process.",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/SelectionProcess"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SelectionProcess"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input"
+					},
+					"422": {
+						"description": "Validation exception"
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"Selection Process"
+				],
+				"summary": "Get all selection processes",
+				"description": "Get all selection processes",
+				"operationId": "getSelectionProcesses",
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/SelectionProcess"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input"
+					},
+					"422": {
+						"description": "Validation exception"
+					}
+				}
+			}
+		},
+		"/selection_process/{id}": {
+			"get": {
+				"tags": [
+					"Selection Process"
+				],
+				"summary": "Get a selection process by ID",
+				"description": "Get a selection process by its ID",
+				"operationId": "getSelectionProcessById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the selection process to retrieve",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/SelectionProcess"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/SelectionProcess"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Selection Process not found"
+					}
+				}
+			}
+		},
+		"/obvisit": {
+			"post": {
+				"tags": [
+					"OBVisit"
+				],
+				"summary": "Add a new OBVisit.",
+				"description": "Add a new OBVisit.",
+				"operationId": "addOBVisit",
+				"requestBody": {
+					"description": "Add a new OBVisit.",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/OBVisit"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OBVisit"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input"
+					},
+					"422": {
+						"description": "Validation exception"
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"OBVisit"
+				],
+				"summary": "Get all OBVisits",
+				"description": "Get all OBVisits",
+				"operationId": "getOBVisits",
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/OBVisit"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input"
+					},
+					"422": {
+						"description": "Validation exception"
+					}
+				}
+			}
+		},
+		"/obvisit/{id}" : {
+			"get": {
+				"tags": [
+					"OBVisit"
+				],
+				"summary": "Get an OBVisit by ID",
+				"description": "Get an OBVisit by its ID",
+				"operationId": "getOBVisitById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the OBVisit to retrieve",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/OBVisit"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/OBVisit"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "OBVisit not found"
+					}
+				}
+			}
+		},
+		"/offer": {
+			"post": {
+				"tags": [
+					"Offer"
+				],
+				"summary": "Add a new offer.",
+				"description": "Add a new offer.",
+				"operationId": "addOffer",
+				"requestBody": {
+					"description": "Add a new offer.",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Offer"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Offer"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input"
+					},
+					"422": {
+						"description": "Validation exception"
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"Offer"
+				],
+				"summary": "Get all offers",
+				"description": "Get all offers",
+				"operationId": "getOffers",
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/Offer"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input"
+					},
+					"422": {
+						"description": "Validation exception"
+					}
+				}
+			}
+		},
+		"/offer/{id}" :
+		{
+			"get": {
+				"tags": [
+					"Offer"
+				],
+				"summary": "Get an offer by ID",
+				"description": "Get an offer by its ID",
+				"operationId": "getOfferById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the offer to retrieve",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Offer"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/Offer"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Offer not found"
+					}
+				}
+			}
+		},
+		"/interview_feedback": {
+			"post": {
+				"tags": [
+					"Interview Feedback"
+				],
+				"summary": "Add a new interview feedback.",
+				"description": "Add a new interview feedback.",
+				"operationId": "addInterviewFeedback",
+				"requestBody": {
+					"description": "Add a new interview feedback.",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/InterviewFeedback"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InterviewFeedback"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input"
+					},
+					"422": {
+						"description": "Validation exception"
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"Interview Feedback"
+				],
+				"summary": "Get all interview feedbacks",
+				"description": "Get all interview feedbacks",
+				"operationId": "getInterviewFeedbacks",
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/InterviewFeedback"
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid input"
+					},
+					"422": {
+						"description": "Validation exception"
+					}
+				}
+			}
+		},
+		"/interview_feedback/{id}": {
+			"get": {
+				"tags": [
+					"Interview Feedback"
+				],
+				"summary": "Get an interview feedback by ID",
+				"description": "Get an interview feedback by its ID",
+				"operationId": "getInterviewFeedbackById",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "ID of the interview feedback to retrieve",
+						"required": true,
+						"schema": {
+							"type": "integer"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successful operation",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InterviewFeedback"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/InterviewFeedback"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Interview Feedback not found"
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -490,13 +1077,136 @@
 					},
 					"title": {
 						"type": "string"
-					},
-					"content": {
-						"type": "string"
 					}
 				},
 				"xml": {
 					"name": "Title"
+				}
+			},
+			"Company": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"name": {
+						"type": "string"
+					},
+					"department": {
+						"type": "string"
+					},
+					"recruitment_period": {
+						"type": "string"
+					}
+				},
+				"xml": {
+					"name": "Company"
+				}
+			},
+			"SelectionProcess": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"steps": {
+						"type": "string"
+					},
+					"entry_sheet": {
+						"type": "string"
+					},
+					"job_fair": {
+						"type": "string"
+					},
+					"written_test": {
+						"type": "string"
+					},
+					"group_discussion": {
+						"type": "string"
+					},
+					"other_selection": {
+						"type": "string"
+					},
+					"interviews": {
+						"type": "string"
+					}
+				},
+				"xml": {
+					"name": "SelectionProcess"
+				}
+			},
+			"OBVisit": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"visited": {
+						"type": "string"
+					}
+				},
+				"xml": {
+					"name": "OBVisit"
+				}
+			},
+			"Offer": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"offered": {
+						"type": "string"
+					},
+					"offered_at": {
+						"type": "string"
+					},
+					"task_after_offer": {
+						"type": "string"
+					},
+					"constraints": {
+						"type": "string"
+					}
+				},
+				"xml": {
+					"name": "Offer"
+				}
+			},
+			"InterviewFeedback": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"main_focus": {
+						"type": "string"
+					},
+					"memorable_question": {
+						"type": "string"
+					},
+					"preparation": {
+						"type": "string"
+					},
+					"key_points": {
+						"type": "string"
+					},
+					"research_source": {
+						"type": "string"
+					},
+					"impressions": {
+						"type": "string"
+					},
+					"advice_for_future": {
+						"type": "string"
+					}
+				},
+				"xml": {
+					"name": "InterviewFeedback"
 				}
 			}
 		}
