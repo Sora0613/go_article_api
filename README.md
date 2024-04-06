@@ -7,11 +7,12 @@
 ソースコードは ./back にあります。
 
 ## Todo && Memo
-- 選考プロセスのstepsの上手な追加、管理方法
+- [x] 選考プロセスのstepsの上手な追加、管理方法
 - 選考プロセスの順番の管理
-- POST Articleの実装（あったら楽かも）
+- [x] POST Articleの実装（あったら楽かも）
 - テストの実装
 - APIドキュメント(gin-swaggerを使ってみる)
+- GetAllArticlesに関してパフォーマンスの改善。(並行処理を使ってみたい。)
 
 ## The Content of tasks
 テーマ: 選考体験記の投稿・取得ができるAPIを実装する
