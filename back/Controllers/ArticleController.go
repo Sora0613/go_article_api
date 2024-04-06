@@ -27,16 +27,26 @@ func (ac ArticleController) GetAllArticle(c *gin.Context) {
 
 	var articles []Models.Article
 
-	offset := (page - 1) * pageSize
-	db.Preload("Title").
-		Preload("Company").
-		Preload("SelectionProcess").
-		Preload("OBVisits").
-		Preload("Offer").
-		Preload("InterviewFeedback").
-		Offset(offset).
-		Limit(pageSize).
-		Find(&articles)
+	// preloadの並行処理化
+
+	done := make(chan bool)
+
+	go func() {
+		offset := (page - 1) * pageSize
+		db.Preload("Title").
+			Preload("Company").
+			Preload("SelectionProcess").
+			Preload("OBVisits").
+			Preload("Offer").
+			Preload("InterviewFeedback").
+			Offset(offset).
+			Limit(pageSize).
+			Find(&articles)
+
+		done <- true
+	}()
+
+	<-done
 
 	// forで回してarticleに各IDを設定
 	for i := range articles {
