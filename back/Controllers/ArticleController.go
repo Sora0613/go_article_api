@@ -3,16 +3,22 @@ package Controllers
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"go_api/Database"
 	"go_api/Models"
 	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 )
 
-type ArticleController struct{}
+type ArticleController struct {
+	db *gorm.DB
+}
+
+func ArticleDatabase(db *gorm.DB) *ArticleController {
+	return &ArticleController{db: db}
+}
 
 func (ac ArticleController) GetAllArticle(c *gin.Context) {
+
 	page, err := strconv.Atoi(c.Query("page"))
 	if err != nil {
 		page = 1
@@ -22,18 +28,13 @@ func (ac ArticleController) GetAllArticle(c *gin.Context) {
 		pageSize = 10 // デフォルトのページサイズを10に。
 	}
 
-	// データベースへの接続
-	db := Database.GormConnect()
-
 	var articles []Models.Article
 
 	// preloadの並行処理化
-
 	done := make(chan bool)
-
 	go func() {
 		offset := (page - 1) * pageSize
-		db.Preload("Title").
+		ac.db.Preload("Title").
 			Preload("Company").
 			Preload("SelectionProcess").
 			Preload("OBVisits").
@@ -62,11 +63,10 @@ func (ac ArticleController) GetAllArticle(c *gin.Context) {
 }
 
 func (ac ArticleController) GetArticle(c *gin.Context) {
-	db := Database.GormConnect()
 	id := c.Param("id")
 
 	var article Models.Article
-	if err := db.Preload("Title").
+	if err := ac.db.Preload("Title").
 		Preload("Company").
 		Preload("SelectionProcess").
 		Preload("SelectionProcess.Steps").
@@ -93,8 +93,7 @@ func (ac ArticleController) GetArticle(c *gin.Context) {
 }
 
 func (ac ArticleController) PostArticle(c *gin.Context) {
-	db := Database.GormConnect()
-	tx := db.Begin()
+	tx := ac.db.Begin()
 
 	var requestData Models.Article
 	if err := c.BindJSON(&requestData); err != nil {

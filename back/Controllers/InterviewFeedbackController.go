@@ -9,7 +9,13 @@ import (
 	"net/http"
 )
 
-type InterviewFeedbackController struct{}
+type InterviewFeedbackController struct {
+	db *gorm.DB
+}
+
+func InterviewFeedbackDatabase(db *gorm.DB) *InterviewFeedbackController {
+	return &InterviewFeedbackController{db: db}
+}
 
 func (ic InterviewFeedbackController) GetAllInterviewFeedbacks(c *gin.Context) {
 	db := Database.GormConnect()
