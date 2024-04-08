@@ -2,28 +2,33 @@ package Controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"go_api/Database"
 	"go_api/Models"
+	"gorm.io/gorm"
 	"net/http"
 )
 
-type SelectionProcessController struct{}
+type SelectionProcessController struct {
+	db *gorm.DB
+}
 
+func SelectionProcessDatabase(db *gorm.DB) *SelectionProcessController {
+	return &SelectionProcessController{db: db}
+}
+
+// TODO:このファイルのPreloadの改修
 func (sc SelectionProcessController) GetAllSelectionProcesses(c *gin.Context) {
-	db := Database.GormConnect()
 	var selectionProcesses []Models.SelectionProcess
-	db.Preload("Steps").Preload("EntrySheet").Preload("JobFair").Preload("WrittenTest").Preload("GroupDiscussion").Preload("OtherSelection").Preload("Interviews").Find(&selectionProcesses)
+	sc.db.Preload("Steps").Preload("EntrySheet").Preload("JobFair").Preload("WrittenTest").Preload("GroupDiscussion").Preload("OtherSelection").Preload("Interviews").Find(&selectionProcesses)
 
 	c.JSON(http.StatusOK, selectionProcesses)
 }
 
 func (sc SelectionProcessController) GetSelectionProcess(c *gin.Context) {
-	db := Database.GormConnect()
 	articleID := c.Param("id")
 
 	var selectionProcess Models.SelectionProcess
 
-	if err := db.Preload("Steps").Preload("EntrySheet").Preload("JobFair").Preload("WrittenTest").Preload("GroupDiscussion").Preload("OtherSelection").Preload("Interviews").Where("article_id = ?", articleID).First(&selectionProcess).Error; err != nil {
+	if err := sc.db.Preload("Steps").Preload("EntrySheet").Preload("JobFair").Preload("WrittenTest").Preload("GroupDiscussion").Preload("OtherSelection").Preload("Interviews").Where("article_id = ?", articleID).First(&selectionProcess).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "SelectionProcess not found for this article"})
 		return
 	}
@@ -32,7 +37,6 @@ func (sc SelectionProcessController) GetSelectionProcess(c *gin.Context) {
 }
 
 func (sc SelectionProcessController) PostSelectionProcess(c *gin.Context) {
-	db := Database.GormConnect()
 
 	requestData := Models.SelectionProcess{}
 
@@ -43,12 +47,12 @@ func (sc SelectionProcessController) PostSelectionProcess(c *gin.Context) {
 
 	// Articleを検索して存在しない場合は新規作成
 	var article Models.Article
-	if err := db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
+	if err := sc.db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
 		// Articleが見つからない場合は新しいArticleを作成
 		article = Models.Article{
 			SelectionProcess: Models.SelectionProcess{},
 		}
-		if err := db.Create(&article).Error; err != nil {
+		if err := sc.db.Create(&article).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create article: " + err.Error()})
 			return
 		}
@@ -66,7 +70,7 @@ func (sc SelectionProcessController) PostSelectionProcess(c *gin.Context) {
 		Interviews:      requestData.Interviews,
 	}
 
-	if err := db.Create(&selectionProcess).Error; err != nil {
+	if err := sc.db.Create(&selectionProcess).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create selectionProcess: " + err.Error()})
 		return
 	}

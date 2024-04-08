@@ -3,29 +3,32 @@ package Controllers
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"go_api/Database"
 	"go_api/Models"
 	"gorm.io/gorm"
 	"net/http"
 )
 
-type OBVisitController struct{}
+type OBVisitController struct {
+	db *gorm.DB
+}
+
+func OBVisitDatabase(db *gorm.DB) *OBVisitController {
+	return &OBVisitController{db: db}
+}
 
 func (oc OBVisitController) GetAllOBVisits(c *gin.Context) {
-	db := Database.GormConnect()
 	var obVisits []Models.OBVisits
-	db.Find(&obVisits)
+	oc.db.Find(&obVisits)
 
 	c.JSON(http.StatusOK, obVisits)
 }
 
 func (oc OBVisitController) GetOBVisits(c *gin.Context) {
-	db := Database.GormConnect()
 	articleID := c.Param("id")
 	var obVisits []Models.OBVisits
 
 	// ArticleIDからOB訪問を検索
-	if err := db.Where("article_id = ?", articleID).Find(&obVisits).Error; err != nil {
+	if err := oc.db.Where("article_id = ?", articleID).Find(&obVisits).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "OBVisits not found for this article"})
 			return
@@ -38,8 +41,6 @@ func (oc OBVisitController) GetOBVisits(c *gin.Context) {
 }
 
 func (oc OBVisitController) PostOBVisits(c *gin.Context) {
-	db := Database.GormConnect()
-
 	requestData := Models.OBVisits{}
 
 	if err := c.BindJSON(&requestData); err != nil {
@@ -49,12 +50,12 @@ func (oc OBVisitController) PostOBVisits(c *gin.Context) {
 
 	// Articleを検索して存在しない場合は新規作成
 	var article Models.Article
-	if err := db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
+	if err := oc.db.Where("id = ?", requestData.ArticleID).First(&article).Error; err != nil {
 		// Articleが見つからない場合は新しいArticleを作成
 		article = Models.Article{
 			OBVisits: Models.OBVisits{},
 		}
-		if err := db.Create(&article).Error; err != nil {
+		if err := oc.db.Create(&article).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, "Failed to create article: "+err.Error())
 			return
 		}
@@ -62,7 +63,7 @@ func (oc OBVisitController) PostOBVisits(c *gin.Context) {
 
 	// Articleに関連付けられたOBVisitsが存在するかを確認
 	var existingOBVisits Models.OBVisits
-	if err := db.Where("article_id = ?", requestData.ArticleID).First(&existingOBVisits).Error; err == nil {
+	if err := oc.db.Where("article_id = ?", requestData.ArticleID).First(&existingOBVisits).Error; err == nil {
 		c.JSON(http.StatusConflict, "OBVisits already exists for this article.")
 		return
 	}
@@ -73,14 +74,14 @@ func (oc OBVisitController) PostOBVisits(c *gin.Context) {
 		Visited:   requestData.Visited,
 	}
 
-	if err := db.Create(&obvisits).Error; err != nil {
+	if err := oc.db.Create(&obvisits).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, "Failed to create OBVisits: "+err.Error())
 		return
 	}
 
 	// ArticleにOBVisitsを関連付けて保存
 	article.OBVisits = obvisits
-	if err := db.Save(&article).Error; err != nil {
+	if err := oc.db.Save(&article).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, "Failed to save OBVisits to article: "+err.Error())
 		return
 	}

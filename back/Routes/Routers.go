@@ -3,18 +3,19 @@ package Routes
 import (
 	"github.com/gin-gonic/gin"
 	"go_api/Controllers"
+	"gorm.io/gorm"
 )
 
-func SetupRoutes(s *gin.Engine) {
+func SetupRoutes(s *gin.Engine, db *gorm.DB) {
 
 	// インスタンス定義
-	articleController := Controllers.ArticleController{}
-	TitleController := Controllers.TitleController{}
-	companyController := Controllers.CompanyController{}
-	selectionProcessController := Controllers.SelectionProcessController{}
-	obvisitController := Controllers.OBVisitController{}
-	offerController := Controllers.OfferController{}
-	interviewFeedbackController := Controllers.InterviewFeedbackController{}
+	articleController := Controllers.ArticleDatabase(db)
+	TitleController := Controllers.TitleDatabase(db)
+	companyController := Controllers.CompanyDatabase(db)
+	selectionProcessController := Controllers.SelectionProcessDatabase(db)
+	obvisitController := Controllers.OBVisitDatabase(db)
+	offerController := Controllers.OfferDatabase(db)
+	interviewFeedbackController := Controllers.InterviewFeedbackDatabase(db)
 
 	// ID指定の場合は全てArticleのIDを指定
 

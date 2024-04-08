@@ -13,6 +13,7 @@
 - テストの実装
 - APIドキュメント(gin-swaggerを使ってみる)
 - GetAllArticlesに関してパフォーマンスの改善。(並行処理を使ってみたい。)
+- Consoleにて、新たにレコードを作成するときにrecord not foundとでてくるのをどうにかしたい。
 
 ## The Content of tasks
 テーマ: 選考体験記の投稿・取得ができるAPIを実装する
