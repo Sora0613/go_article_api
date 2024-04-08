@@ -37,6 +37,13 @@ func (ac ArticleController) GetAllArticle(c *gin.Context) {
 		ac.db.Preload("Title").
 			Preload("Company").
 			Preload("SelectionProcess").
+			Preload("SelectionProcess.Steps").
+			Preload("SelectionProcess.EntrySheet").
+			Preload("SelectionProcess.JobFair").
+			Preload("SelectionProcess.WrittenTest").
+			Preload("SelectionProcess.GroupDiscussion").
+			Preload("SelectionProcess.OtherSelection").
+			Preload("SelectionProcess.Interviews").
 			Preload("OBVisits").
 			Preload("Offer").
 			Preload("InterviewFeedback").
