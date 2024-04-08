@@ -15,10 +15,17 @@ func SelectionProcessDatabase(db *gorm.DB) *SelectionProcessController {
 	return &SelectionProcessController{db: db}
 }
 
-// TODO:このファイルのPreloadの改修
+// TODO:ここのPreloadの部分をもうちょっとどうにかしたい。
 func (sc SelectionProcessController) GetAllSelectionProcesses(c *gin.Context) {
 	var selectionProcesses []Models.SelectionProcess
-	sc.db.Preload("Steps").Preload("EntrySheet").Preload("JobFair").Preload("WrittenTest").Preload("GroupDiscussion").Preload("OtherSelection").Preload("Interviews").Find(&selectionProcesses)
+	sc.db.Preload("Steps").
+		Preload("EntrySheet").
+		Preload("JobFair").
+		Preload("WrittenTest").
+		Preload("GroupDiscussion").
+		Preload("OtherSelection").
+		Preload("Interviews").
+		Find(&selectionProcesses)
 
 	c.JSON(http.StatusOK, selectionProcesses)
 }
@@ -28,7 +35,15 @@ func (sc SelectionProcessController) GetSelectionProcess(c *gin.Context) {
 
 	var selectionProcess Models.SelectionProcess
 
-	if err := sc.db.Preload("Steps").Preload("EntrySheet").Preload("JobFair").Preload("WrittenTest").Preload("GroupDiscussion").Preload("OtherSelection").Preload("Interviews").Where("article_id = ?", articleID).First(&selectionProcess).Error; err != nil {
+	if err := sc.db.Preload("Steps").
+		Preload("EntrySheet").
+		Preload("JobFair").
+		Preload("WrittenTest").
+		Preload("GroupDiscussion").
+		Preload("OtherSelection").
+		Preload("Interviews").
+		Where("article_id = ?", articleID).
+		First(&selectionProcess).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "SelectionProcess not found for this article"})
 		return
 	}
